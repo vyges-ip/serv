@@ -1,0 +1,13 @@
+upstream:
+  source: https://github.com/olofk/serv
+  branch: main
+  license: ISC
+  rtl_paths:
+    - rtl
+  exclude:
+    - bench
+    - sw
+    - syn
+    - data
+    - doc
+metadata_locked: true
