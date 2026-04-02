@@ -1,14 +1,25 @@
-name: upstream-sync
+name: Upstream Sync
+
 on:
+  schedule:
+    - cron: '0 0 * * 1'
   workflow_dispatch:
     inputs:
       force_metadata:
-        description: 'Force metadata regeneration (overrides metadata_locked)'
+        description: 'Force regenerate vyges-metadata.json even if it exists'
         required: false
-        default: 'false'
-  schedule:
-    - cron: '0 6 * * 1'
+        default: false
+        type: boolean
+  push:
+    paths:
+      - 'upstream.yaml'
+      - '.github/workflows/upstream-sync.yml'
+
 jobs:
   sync:
-    uses: vyges-ip/.github/.github/workflows/upstream-sync-reusable.yml@main
-    secrets: inherit
+    uses: vyges-ip/.github/.github/workflows/upstream-sync.yml@main
+    with:
+      force_metadata: ${{ inputs.force_metadata || false }}
+    permissions:
+      contents: write
+      models: read
