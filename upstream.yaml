@@ -1,13 +1,17 @@
+schema_version: "vyges-upstream-v1"
 upstream:
+  type: "standalone"
   source: https://github.com/olofk/serv
   branch: main
-  license: ISC
-  rtl_paths:
-    - rtl
-  exclude:
-    - bench
-    - sw
-    - syn
-    - data
-    - doc
+import:
+  rtl:
+    - path: "rtl"
+      map_to: "rtl"
+  license:
+    - path: "LICENSE"
+  readme:
+    - path: "README.md"
+license:
+  spdx: ISC
+  file: LICENSE
 metadata_locked: true
