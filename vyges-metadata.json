@@ -1,10 +1,11 @@
 {
   "$schema": "https://vyges.com/schema/v1/vyges-metadata.schema.json",
+  "x-version": "1.0.0",
   "name": "serv",
-  "version": "1.3.0",
-  "description": "SERV \u2014 the world's smallest RISC-V CPU. Bit-serial architecture processes one bit per cycle, achieving minimal area (~200 LUTs on FPGA, ~2,000 gates ASIC). Implements RV32I base integer ISA with optional M, C, Zicsr extensions. Ideal for area-constrained designs, IoT sensor nodes, and massively parallel compute arrays.",
+  "version": "0.1.0",
+  "description": "SERV is the world's smallest RISC-V CPU, designed as a bit-serial processor optimized for minimal silicon area and power consumption. It is suitable for resource-constrained applications and supports the RISC-V instruction set.",
   "license": "ISC",
-  "maturity": "production",
+  "maturity": "rtl_verified",
   "target": [
     "asic",
     "fpga"
@@ -12,189 +13,209 @@
   "design_type": [
     "digital"
   ],
-  "created": "2018-01-01T00:00:00Z",
-  "updated": "2026-04-02T05:25:08Z",
+  "created": "2026-04-06T04:31:28Z",
+  "updated": "2026-04-06T04:31:28Z",
   "source": {
     "type": "git",
     "url": "https://github.com/olofk/serv",
+    "commit": "null",
+    "ip_path": ".",
     "private": false,
-    "rtl_path": "rtl"
+    "containsEncryptedPayload": false,
+    "indexing": true
   },
+  "maintainers": [
+    {
+      "name": "Vyges",
+      "email": "team@vyges.com",
+      "url": "https://vyges.com",
+      "github": "vyges"
+    }
+  ],
   "interfaces": [
     {
       "type": "clock",
-      "signals": [
-        {
-          "name": "clk",
-          "direction": "input",
-          "width": 1
-        }
-      ]
+      "direction": "input",
+      "protocol": "custom",
+      "port": "i_clk",
+      "width": 1,
+      "description": "System clock input"
     },
     {
       "type": "reset",
-      "signals": [
-        {
-          "name": "i_rst",
-          "direction": "input",
-          "width": 1
-        }
-      ]
+      "direction": "input",
+      "protocol": "custom",
+      "port": "i_rst",
+      "width": 1,
+      "description": "Active-high reset input"
     },
     {
       "type": "bus",
-      "protocol": "wishbone",
-      "description": "Instruction bus (Wishbone B3)",
-      "signals": [
-        {
-          "name": "o_ibus_adr",
-          "direction": "output",
-          "width": 32
-        },
-        {
-          "name": "o_ibus_cyc",
-          "direction": "output",
-          "width": 1
-        },
-        {
-          "name": "i_ibus_rdt",
-          "direction": "input",
-          "width": 32
-        },
-        {
-          "name": "i_ibus_ack",
-          "direction": "input",
-          "width": 1
-        }
-      ]
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_adr_o",
+      "width": 32,
+      "description": "Wishbone address output"
     },
     {
       "type": "bus",
-      "protocol": "wishbone",
-      "description": "Data bus (Wishbone B3)",
-      "signals": [
-        {
-          "name": "o_dbus_adr",
-          "direction": "output",
-          "width": 32
-        },
-        {
-          "name": "o_dbus_dat",
-          "direction": "output",
-          "width": 32
-        },
-        {
-          "name": "o_dbus_sel",
-          "direction": "output",
-          "width": 4
-        },
-        {
-          "name": "o_dbus_we",
-          "direction": "output",
-          "width": 1
-        },
-        {
-          "name": "o_dbus_cyc",
-          "direction": "output",
-          "width": 1
-        },
-        {
-          "name": "i_dbus_rdt",
-          "direction": "input",
-          "width": 32
-        },
-        {
-          "name": "i_dbus_ack",
-          "direction": "input",
-          "width": 1
-        }
-      ]
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_dat_o",
+      "width": 32,
+      "description": "Wishbone data output"
+    },
+    {
+      "type": "bus",
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_dat_i",
+      "width": 32,
+      "description": "Wishbone data input"
+    },
+    {
+      "type": "bus",
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_we_o",
+      "width": 1,
+      "description": "Wishbone write enable output"
+    },
+    {
+      "type": "bus",
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_stb_o",
+      "width": 1,
+      "description": "Wishbone strobe output"
+    },
+    {
+      "type": "bus",
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_cyc_o",
+      "width": 1,
+      "description": "Wishbone cycle output"
+    },
+    {
+      "type": "bus",
+      "direction": "master",
+      "protocol": "Wishbone",
+      "port": "wb_ack_i",
+      "width": 1,
+      "description": "Wishbone acknowledge input"
     }
   ],
   "parameters": [
     {
-      "name": "RESET_PC",
-      "type": "int",
-      "default": "32'h00000000",
-      "description": "Reset vector address"
-    },
-    {
       "name": "WITH_CSR",
-      "type": "int",
-      "default": "1",
-      "description": "Enable CSR support (Zicsr)"
+      "type": "bit",
+      "default": 1,
+      "description": "Enable or disable CSR (Control and Status Register) support"
     },
     {
-      "name": "MDU",
-      "type": "int",
-      "default": "0",
-      "description": "Enable M extension (multiply/divide)"
+      "name": "WITH_MDU",
+      "type": "bit",
+      "default": 0,
+      "description": "Enable or disable the Multiplication and Division Unit (MDU)"
     },
     {
-      "name": "COMPRESSED",
-      "type": "int",
-      "default": "0",
-      "description": "Enable C extension (compressed instructions)"
-    },
-    {
-      "name": "ALIGN",
-      "type": "int",
-      "default": "0",
-      "description": "Enable sub-word alignment logic"
-    },
-    {
-      "name": "RF_WIDTH",
-      "type": "int",
-      "default": "2",
-      "description": "Register file read width (bits per cycle)"
+      "name": "RESET_STRATEGY",
+      "type": "enum",
+      "default": "MINI",
+      "description": "Reset strategy for the core (e.g., MINI, FULL)"
     }
   ],
-  "rtl_files": [
-    "rtl/serv_alu.v",
-    "rtl/serv_aligner.v",
-    "rtl/serv_bufreg.v",
-    "rtl/serv_bufreg2.v",
-    "rtl/serv_compdec.v",
-    "rtl/serv_csr.v",
-    "rtl/serv_ctrl.v",
-    "rtl/serv_debug.v",
-    "rtl/serv_decode.v",
-    "rtl/serv_immdec.v",
-    "rtl/serv_mem_if.v",
-    "rtl/serv_rf_if.v",
-    "rtl/serv_rf_ram.v",
-    "rtl/serv_rf_ram_if.v",
-    "rtl/serv_rf_top.v",
-    "rtl/serv_state.v",
-    "rtl/serv_synth_wrapper.v",
-    "rtl/serv_top.v"
-  ],
-  "rtl_quality": {
-    "module_prefixed": true,
-    "defines_prefixed": true,
-    "header_guards": true,
-    "one_module_per_file": true,
-    "self_contained_includes": true,
-    "no_translate_pragmas": true,
-    "lint_clean": true,
-    "no_casex": true,
-    "width_clean": true,
-    "no_sv_keyword_conflicts": true
+  "performance": {
+    "lut_usage": {
+      "Lattice iCE40": 198,
+      "Intel Cyclone 10LP": 239,
+      "AMD Artix-7": 125
+    },
+    "flip_flop_usage": {
+      "Lattice iCE40": 164,
+      "Intel Cyclone 10LP": 164,
+      "AMD Artix-7": 164
+    },
+    "gate_equivalents": 2100
   },
-  "defines": [],
+  "architecture": {
+    "type": "processor",
+    "features": [
+      "Bit-serial RISC-V core",
+      "RV32I instruction set support",
+      "Optional CSR and MDU support",
+      "Minimal silicon area and power consumption"
+    ]
+  },
+  "asic": {
+    "flavor": "digital",
+    "technology": [
+      "sky130A"
+    ]
+  },
+  "fpga": {
+    "toolchain": [
+      "Vivado",
+      "Yosys",
+      "NextPNR"
+    ],
+    "devices": [
+      "Artix-7",
+      "Lattice iCE40",
+      "Intel Cyclone 10LP"
+    ]
+  },
+  "dependencies": [
+    {
+      "name": "mdu",
+      "type": "core",
+      "description": "Optional Multiplication and Division Unit (MDU) for RISC-V M extension"
+    }
+  ],
+  "test": {
+    "testbenches": [
+      "serv_tb"
+    ],
+    "status": "upstream_passing",
+    "coverage": "functional"
+  },
+  "documentation": {
+    "upstream": "https://serv.readthedocs.io/en/latest/#"
+  },
+  "artifacts": {
+    "total_rtl_lines": 3562
+  },
   "categories": [
     {
       "main_category": "Processing Cores",
-      "sub_category": "risc-v, area-optimized"
+      "sub_category": "RISC-V"
     }
   ],
+  "keywords": [
+    "RISC-V",
+    "bit-serial",
+    "CPU",
+    "low-power",
+    "minimal-area",
+    "open-source"
+  ],
   "trust": {
-    "verification_level": "production",
-    "tapeout_count": 5,
+    "verification_level": "simulation_passing",
+    "tapeout_count": 0,
     "fpga_validated": true,
-    "maintained": true
+    "formal_verified": false,
+    "maintained": true,
+    "last_activity": "2026-04-06T04:31:28Z"
   },
-  "branding": {
-    "display_name": "SERV"
+  "meta": {
+    "template": {
+      "generator": "github-models-ai",
+      "template_version": "1.0.0",
+      "generated_at": "2026-04-06T04:31:28Z"
+    },
+    "schema": {
+      "version": "1.0.0"
+    }
   }
 }
