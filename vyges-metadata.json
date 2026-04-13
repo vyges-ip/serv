@@ -3,7 +3,7 @@
   "x-version": "1.0.0",
   "name": "serv",
   "version": "0.1.0",
-  "description": "SERV is the world's smallest RISC-V CPU, designed as a bit-serial processor optimized for minimal silicon area and power consumption. It is suitable for resource-constrained applications and supports the RISC-V instruction set.",
+  "description": "SERV is the world's smallest RISC-V CPU, designed as a bit-serial processor for minimal silicon area and power consumption. It is ideal for resource-constrained applications and supports the RISC-V RV32I instruction set.",
   "license": "ISC",
   "maturity": "rtl_verified",
   "target": [
@@ -13,8 +13,8 @@
   "design_type": [
     "digital"
   ],
-  "created": "2026-04-06T04:31:28Z",
-  "updated": "2026-04-06T04:31:28Z",
+  "created": "2026-04-13T03:28:54Z",
+  "updated": "2026-04-13T03:28:54Z",
   "source": {
     "type": "git",
     "url": "https://github.com/olofk/serv",
@@ -39,7 +39,7 @@
       "protocol": "custom",
       "port": "i_clk",
       "width": 1,
-      "description": "System clock input"
+      "description": "Clock input for the SERV core."
     },
     {
       "type": "reset",
@@ -47,7 +47,7 @@
       "protocol": "custom",
       "port": "i_rst",
       "width": 1,
-      "description": "Active-high reset input"
+      "description": "Active-high reset input for the SERV core."
     },
     {
       "type": "bus",
@@ -55,7 +55,7 @@
       "protocol": "Wishbone",
       "port": "wb_adr_o",
       "width": 32,
-      "description": "Wishbone address output"
+      "description": "Wishbone address output."
     },
     {
       "type": "bus",
@@ -63,7 +63,7 @@
       "protocol": "Wishbone",
       "port": "wb_dat_o",
       "width": 32,
-      "description": "Wishbone data output"
+      "description": "Wishbone data output."
     },
     {
       "type": "bus",
@@ -71,7 +71,7 @@
       "protocol": "Wishbone",
       "port": "wb_dat_i",
       "width": 32,
-      "description": "Wishbone data input"
+      "description": "Wishbone data input."
     },
     {
       "type": "bus",
@@ -79,7 +79,7 @@
       "protocol": "Wishbone",
       "port": "wb_we_o",
       "width": 1,
-      "description": "Wishbone write enable output"
+      "description": "Wishbone write enable output."
     },
     {
       "type": "bus",
@@ -87,7 +87,7 @@
       "protocol": "Wishbone",
       "port": "wb_stb_o",
       "width": 1,
-      "description": "Wishbone strobe output"
+      "description": "Wishbone strobe output."
     },
     {
       "type": "bus",
@@ -95,7 +95,7 @@
       "protocol": "Wishbone",
       "port": "wb_cyc_o",
       "width": 1,
-      "description": "Wishbone cycle output"
+      "description": "Wishbone cycle output."
     },
     {
       "type": "bus",
@@ -103,27 +103,27 @@
       "protocol": "Wishbone",
       "port": "wb_ack_i",
       "width": 1,
-      "description": "Wishbone acknowledge input"
+      "description": "Wishbone acknowledge input."
     }
   ],
   "parameters": [
     {
+      "name": "RESET_PC",
+      "type": "int",
+      "default": 0,
+      "description": "Reset value for the program counter."
+    },
+    {
       "name": "WITH_CSR",
       "type": "bit",
       "default": 1,
-      "description": "Enable or disable CSR (Control and Status Register) support"
+      "description": "Enable or disable CSR support."
     },
     {
-      "name": "WITH_MDU",
+      "name": "MDU",
       "type": "bit",
       "default": 0,
-      "description": "Enable or disable the Multiplication and Division Unit (MDU)"
-    },
-    {
-      "name": "RESET_STRATEGY",
-      "type": "enum",
-      "default": "MINI",
-      "description": "Reset strategy for the core (e.g., MINI, FULL)"
+      "description": "Enable or disable the multiplication and division unit (MDU)."
     }
   ],
   "performance": {
@@ -144,8 +144,8 @@
     "features": [
       "Bit-serial RISC-V core",
       "RV32I instruction set support",
-      "Optional CSR and MDU support",
-      "Minimal silicon area and power consumption"
+      "Minimal silicon area",
+      "Low power consumption"
     ]
   },
   "asic": {
@@ -158,7 +158,7 @@
     "toolchain": [
       "Vivado",
       "Yosys",
-      "NextPNR"
+      "nextpnr"
     ],
     "devices": [
       "Artix-7",
@@ -168,9 +168,19 @@
   },
   "dependencies": [
     {
+      "name": "fusesoc",
+      "type": "tool",
+      "description": "FuseSoC is used for managing and building the SERV core."
+    },
+    {
+      "name": "Verilator",
+      "type": "tool",
+      "description": "Verilator is used for linting and simulation of the SERV core."
+    },
+    {
       "name": "mdu",
-      "type": "core",
-      "description": "Optional Multiplication and Division Unit (MDU) for RISC-V M extension"
+      "type": "library",
+      "description": "Optional library for enabling the RISC-V M extension (multiplication and division unit)."
     }
   ],
   "test": {
@@ -195,10 +205,9 @@
   "keywords": [
     "RISC-V",
     "bit-serial",
-    "CPU",
     "low-power",
     "minimal-area",
-    "open-source"
+    "RV32I"
   ],
   "trust": {
     "verification_level": "simulation_passing",
@@ -206,13 +215,13 @@
     "fpga_validated": true,
     "formal_verified": false,
     "maintained": true,
-    "last_activity": "2026-04-06T04:31:28Z"
+    "last_activity": "2026-04-13T03:28:54Z"
   },
   "meta": {
     "template": {
       "generator": "github-models-ai",
       "template_version": "1.0.0",
-      "generated_at": "2026-04-06T04:31:28Z"
+      "generated_at": "2026-04-13T03:28:54Z"
     },
     "schema": {
       "version": "1.0.0"
