@@ -3,7 +3,7 @@ upstream:
   type: "standalone"
   source: https://github.com/olofk/serv
   branch: main
-  commit: f5ddfaa6378a958f0797146a6f8b2bcf72ce4e3b
+  commit: f200eb2ed7b69ac1c6b8eddd47654522aeee5ce8
 import:
   rtl:
     - path: "rtl"
